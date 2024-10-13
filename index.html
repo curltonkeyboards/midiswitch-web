@@ -1,5 +1,5 @@
 <head>
-    <title>Vial Web</title>
+    <title>SwitchStation</title>
     <link rel="icon" href="/icon.png" type="image/png">
 <style>
 body {
@@ -143,7 +143,7 @@ body {
         btn.value = "Requesting device list...";
         devices = await navigator.hid.requestDevice({filters: [{usagePage: 0xFF60, usage: 0x61}]});
         if (devices.length != 1) {
-            btn.value = "Start Vial";
+            btn.value = "Start SwitchStation";
             btn.disabled = false;
             return;
         }
