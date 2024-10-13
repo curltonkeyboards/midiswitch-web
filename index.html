@@ -33,7 +33,15 @@ body {
     font-size: 250%;
     padding: 1em;
     border-radius: 15px; /* Rounded corners */
-	background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    color: white; /* Text color */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+/* On hover */
+#startup_btn:hover {
+    background-color: rgba(255, 255, 255, 0.5); /* Change to a semi-transparent white on hover */
+    color: black; /* Change text color to black on hover */
 }
 #version {
     position: absolute;
