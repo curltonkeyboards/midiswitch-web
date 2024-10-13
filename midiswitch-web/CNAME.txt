@@ -1,1 +1,2 @@
+midiswitch.app
 www.midiswitch.app
