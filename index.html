@@ -1,16 +1,12 @@
 <head>
-    <title>SwitchStation</title>
-    <link rel="icon" href="/icon4.png" type="image/png">
+    <title>Vial Web</title>
+    <link rel="icon" href="/icon.png" type="image/png">
 <style>
 body {
     font-family: sans-serif;
     margin: 0;
     padding: 0;
     background-color: #ccc;
-	background-image: url('midiswitchbacking.png'); /* Replace 'your-image.jpg' with the actual path to your image */
-    background-size: cover; /* Ensures the image covers the entire background */
-    background-position: center; /* Centers the background image */
-    background-repeat: no-repeat; /* Prevents repeating of the image */
     overscroll-behavior-y: none;
 }
 #canvas {
@@ -32,16 +28,6 @@ body {
 #startup_btn {
     font-size: 250%;
     padding: 1em;
-    border-radius: 15px; /* Rounded corners */
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    color: white; /* Text color */
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
-}
-
-/* On hover */
-#startup_btn:hover {
-    background-color: rgba(255, 255, 255, 0.5); /* Change to a semi-transparent white on hover */
-    color: black; /* Change text color to black on hover */
 }
 #version {
     position: absolute;
@@ -84,7 +70,7 @@ body {
 
 <div id="startup">
     <div id="startup_inner">
-        <input id="startup_btn" type="button" onclick="connect()" value="Connect MIDIswitch" disabled="true" /><br>
+        <input id="startup_btn" type="button" onclick="connect()" value="Start Vial" disabled="true" /><br>
         <div id="error" style="display:none">
             <p id="error_msg"></p>
             <p>You can check web browser support at <a href="https://caniuse.com/webhid" target="_blank">caniuse.com</a>.<br>
@@ -92,7 +78,7 @@ body {
                 You can also download the standalone Vial application from <a href="https://get.vial.today/" target="_blank">get.vial.today</a>.</p>
         </div>
     </div>
-    <div id="version">Vial: 9858198a2d6b316f7aaced45d7bf847ffbfba657<br>Web: 07cedfecb567dd28889b2e2e0c5dc7566a74adf9<br>Support: 3bcf423c970300722a04113de1d20c901b177e42</div>
+    <div id="version">Vial: 9858198a2d6b316f7aaced45d7bf847ffbfba657<br>Web: de3692a2c8737598e145abe1c740b3a7d4b83d87<br>Support: 3bcf423c970300722a04113de1d20c901b177e42</div>
 </div>
 
 <div id="unlock" style="display:none">
@@ -157,7 +143,7 @@ body {
         btn.value = "Requesting device list...";
         devices = await navigator.hid.requestDevice({filters: [{usagePage: 0xFF60, usage: 0x61}]});
         if (devices.length != 1) {
-            btn.value = "Connect MIDIswitch";
+            btn.value = "Start Vial";
             btn.disabled = false;
             return;
         }
@@ -217,6 +203,6 @@ body {
     };
 </script>
 
-<script src="main-301a3f21e48be26b5c8085bd6343872e796ca6ebc24f43aa4de616146a9b9521.js"></script>
+<script src="main-67869f48de017b954cb1042da803dfa43c733212e8255f9493da3b45cdd26695.js"></script>
 
 </body>
