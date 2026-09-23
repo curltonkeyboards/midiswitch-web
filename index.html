@@ -98,6 +98,21 @@ body {
 }
 #enter_btn { font-size: 20px; padding: 18px 28px; }
 #landing_choices { display: none; }
+#landing_progress {
+    display: none;
+    height: 6px;
+    margin: 22px 4px 0;
+    border-radius: 3px;
+    background: rgba(40, 40, 90, 0.12);
+    overflow: hidden;
+}
+#landing_progress_fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #3f6fd8 0%, #6a3fc7 100%);
+    transition: width 0.35s ease;
+}
 #landing_status {
     min-height: 1.4em;
     margin: 18px 0 0;
@@ -161,9 +176,10 @@ body {
             <button id="demo_btn" class="landing_btn landing_secondary" onclick="choose(start_demo)">I do NOT have a MIDIswitch, I just want to look around</button>
             <p id="landing_note" style="display:none"></p>
         </div>
+        <div id="landing_progress"><div id="landing_progress_fill"></div></div>
         <p id="landing_status"></p>
     </div>
-    <div id="version">00fd9d57109b7312ace853e0b15923d23ce29f47</div>
+    <div id="version">0fdb1ddc4e06b4fdb737e09a81d71b00b436f8c3</div>
 </div>
 
 <div id="unlock" style="display:none">
@@ -234,6 +250,7 @@ body {
             document.getElementById("unlock").style.display = "none";
         } else if (e.data.cmd == "notify_ready") {
             clearInterval(g_animation);
+            clearInterval(g_progress_creep);
             document.getElementById("startup").style.display = "none";
             // Qt only redraws the canvas on an event: nudge it so the
             // finished window shows at once instead of a stale frame.
@@ -244,6 +261,8 @@ body {
                 }, ms);
             });
             setTimeout(function() { window.dispatchEvent(new Event("resize")); }, 2000);
+        } else if (e.data.cmd == "progress") {
+            set_progress(e.data.percent, e.data.text);
         } else if (e.data.cmd == "notify_alive") {
             engine_alive();
         } else if (e.data.cmd == "fatal_error") {
@@ -257,6 +276,47 @@ body {
     function set_status(text) {
         document.getElementById("landing_status").textContent = text;
     }
+
+    var g_progress_pct = 0;
+
+    function set_progress(pct, text) {
+        document.getElementById("landing_progress").style.display = "block";
+        if (pct > g_progress_pct) g_progress_pct = Math.min(pct, 100);
+        document.getElementById("landing_progress_fill").style.width = g_progress_pct + "%";
+        if (text) {
+            clearInterval(g_animation);
+            set_status(text + "...");
+        }
+    }
+
+    // Between startup steps, creep forward so a long step never looks frozen.
+    var g_progress_creep = null;
+
+    function start_progress_creep() {
+        clearInterval(g_progress_creep);
+        g_progress_creep = setInterval(function() {
+            if (g_progress_pct < 97) {
+                g_progress_pct = Math.min(97, g_progress_pct + 0.4);
+                document.getElementById("landing_progress_fill").style.width = g_progress_pct + "%";
+            }
+        }, 500);
+    }
+
+    function reset_progress() {
+        g_progress_pct = 0;
+        document.getElementById("landing_progress_fill").style.width = "0%";
+    }
+
+    // Emscripten reports the app download as "Downloading data... (done/total)".
+    Module.setStatus = function(text) {
+        var m = /\((\d+(?:\.\d+)?)\/(\d+)\)/.exec(text || "");
+        if (m && !g_started) {
+            var pct = Math.floor(100 * parseFloat(m[1]) / parseFloat(m[2]));
+            document.getElementById("landing_progress").style.display = "block";
+            document.getElementById("landing_progress_fill").style.width = pct + "%";
+            if (pct < 100) set_status("Downloading Switchstation... " + pct + "%");
+        }
+    };
 
     function set_choices_enabled(on) {
         document.getElementById("connect_btn").disabled = !on || !("hid" in navigator);
@@ -292,11 +352,18 @@ body {
 
     function engine_alive() {
         g_alive = true;
+        if (!g_started && document.getElementById("landing_status").textContent.indexOf("Downloading") === 0) {
+            set_status("");
+            document.getElementById("landing_progress").style.display = "none";
+        }
         g_alive_waiters.splice(0).forEach(function(resolve) { resolve(); });
     }
 
     function start_app(demo) {
         g_started = true;
+        reset_progress();
+        set_progress(2, "");
+        start_progress_creep();
         PThread.runningWorkers[0].postMessage({cmd: "py", payload:
             "import webmain;webmain.main(qtApp" + (demo ? ", demo=True" : "") + ")"});
         g_animation = setInterval(update_animation, 500);
@@ -379,6 +446,6 @@ body {
     };
 </script>
 
-<script src="main-73e1eaa6d2aee9cee2ee0d778727d260e1656d211e70de8573e485c28fdb9f0a.js"></script>
+<script src="main-903448f6a4bb89d0991236368194b3dd00ae029e4aa56970a85e1c6900928565.js"></script>
 
 </body>
