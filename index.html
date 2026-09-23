@@ -1,5 +1,5 @@
 <head>
-    <title>Vial Web</title>
+    <title>MIDIswitch</title>
     <link rel="icon" href="/icon.png" type="image/png">
 <style>
 body {
@@ -70,15 +70,14 @@ body {
 
 <div id="startup">
     <div id="startup_inner">
-        <input id="startup_btn" type="button" onclick="connect()" value="Start Vial" disabled="true" /><br>
+        <input id="startup_btn" type="button" onclick="connect()" value="Start MIDIswitch" disabled="true" /><br>
         <div id="error" style="display:none">
             <p id="error_msg"></p>
             <p>You can check web browser support at <a href="https://caniuse.com/webhid" target="_blank">caniuse.com</a>.<br>
-                Latest versions of Chrome, Chromium or Edge are recommended to use Vial Web.<br>
-                You can also download the standalone Vial application from <a href="https://get.vial.today/" target="_blank">get.vial.today</a>.</p>
+                Latest versions of Chrome, Chromium or Edge are recommended to use the MIDIswitch web app.</p>
         </div>
     </div>
-    <div id="version">Vial: a0fe05faa09e0634517373128caab04e7665fee8<br>Web: 728678a90e2303d07d844760dba0a74e50c5e297<br>Support: 3bcf423c970300722a04113de1d20c901b177e42</div>
+    <div id="version">eab8c337e7924ca31de796953ec5f31424c1c38d</div>
 </div>
 
 <div id="unlock" style="display:none">
@@ -141,9 +140,9 @@ body {
 
         btn.disabled = true;
         btn.value = "Requesting device list...";
-        devices = await navigator.hid.requestDevice({filters: [{usagePage: 0xFF60, usage: 0x61}]});
+        devices = await navigator.hid.requestDevice({filters: [{usagePage: 0xFF4D, usage: 0x53}]});
         if (devices.length != 1) {
-            btn.value = "Start Vial";
+            btn.value = "Start MIDIswitch";
             btn.disabled = false;
             return;
         }
@@ -168,8 +167,8 @@ body {
             release_number: 1,
             manufacturer_string: "",
             product_string: g_device.productName,
-            usage_page: 65376,
-            usage: 97,
+            usage_page: 0xFF4D,
+            usage: 0x53,
             interface_number: 1
         };
         _vialglue_set_device_desc(allocateUTF8(JSON.stringify(device_desc)));
@@ -203,6 +202,6 @@ body {
     };
 </script>
 
-<script src="main-23ff403e5d9141568f753e4786f25da4b8b3d758b7b6385fe0ce09b685da7f16.js"></script>
+<script src="main-11b6c485a11715577faa25542d144d12f5c56c392c029db277f99e007907d109.js"></script>
 
 </body>
