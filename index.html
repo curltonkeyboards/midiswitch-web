@@ -15,26 +15,107 @@ body {
 }
 #startup {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     z-index: 90;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
-#startup_btn {
-    font-size: 250%;
-    padding: 1em;
+#landing_bg {
+    position: absolute;
+    inset: -30px;
+    background: #e9e6e2 url("landing.jpg") center / cover no-repeat;
+    filter: blur(7px) saturate(1.05);
+    transform: scale(1.03);
+}
+#landing_tint {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.10) 0%, rgba(30,30,60,0.28) 100%);
+}
+#landing_card {
+    position: relative;
+    min-width: 340px;
+    max-width: 560px;
+    margin: 16px;
+    padding: 44px 48px 38px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 20px 60px rgba(20, 20, 50, 0.25);
+    backdrop-filter: blur(22px) saturate(1.4);
+    -webkit-backdrop-filter: blur(22px) saturate(1.4);
+}
+#landing_logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(40, 40, 110, 0.35);
+    margin-bottom: 18px;
+}
+#landing_title {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #1d1d33;
+}
+#landing_sub {
+    margin: 0 0 26px;
+    font-size: 15px;
+    color: rgba(29, 29, 51, 0.72);
+}
+.landing_btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 28px;
+    margin: 12px 0 0;
+    border: none;
+    border-radius: 16px;
+    font: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+.landing_btn:hover:not(:disabled) { transform: translateY(-1px); }
+.landing_btn:active:not(:disabled) { transform: translateY(1px); }
+.landing_btn:disabled { opacity: 0.5; cursor: default; }
+.landing_primary {
+    color: white;
+    background: linear-gradient(135deg, #3f6fd8 0%, #6a3fc7 100%);
+    box-shadow: 0 10px 26px rgba(70, 60, 190, 0.38);
+}
+.landing_primary:hover:not(:disabled) { box-shadow: 0 14px 32px rgba(70, 60, 190, 0.48); }
+.landing_secondary {
+    color: #262650;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 6px 18px rgba(30, 30, 80, 0.12);
+}
+#enter_btn { font-size: 20px; padding: 18px 28px; }
+#landing_choices { display: none; }
+#landing_status {
+    min-height: 1.4em;
+    margin: 18px 0 0;
+    font-size: 14px;
+    color: rgba(29, 29, 51, 0.75);
+}
+#landing_note {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #8a2a2a;
 }
 #version {
     position: absolute;
     right: 0;
     bottom: 0;
     margin: 1em;
-    color: #aaa;
+    color: rgba(60, 60, 80, 0.45);
+    font-size: 11px;
     text-align: right;
 }
 #unlock {
@@ -61,23 +142,28 @@ body {
     width: 30%;
     text-align: center;
 }
-#error_msg {
-    color: red;
-}
 </style>
 </head>
 <body>
 
 <div id="startup">
-    <div id="startup_inner">
-        <input id="startup_btn" type="button" onclick="connect()" value="Start MIDIswitch" disabled="true" /><br>
-        <div id="error" style="display:none">
-            <p id="error_msg"></p>
-            <p>You can check web browser support at <a href="https://caniuse.com/webhid" target="_blank">caniuse.com</a>.<br>
-                Latest versions of Chrome, Chromium or Edge are recommended to use the MIDIswitch web app.</p>
+    <div id="landing_bg"></div>
+    <div id="landing_tint"></div>
+    <div id="landing_card">
+        <img id="landing_logo" src="icon.png" alt="">
+        <h1 id="landing_title">Switchstation</h1>
+        <p id="landing_sub">Configure your MIDIswitch in the browser</p>
+        <div id="landing_enter">
+            <button id="enter_btn" class="landing_btn landing_primary" onclick="show_choices()">Enter Switchstation</button>
         </div>
+        <div id="landing_choices">
+            <button id="connect_btn" class="landing_btn landing_primary" onclick="choose(connect)">I have a MIDIswitch and it is connected</button>
+            <button id="demo_btn" class="landing_btn landing_secondary" onclick="choose(start_demo)">I do NOT have a MIDIswitch, I just want to look around</button>
+            <p id="landing_note" style="display:none"></p>
+        </div>
+        <p id="landing_status"></p>
     </div>
-    <div id="version">6b77ea8e1a66280fb7e3d7dfd7df82a9bf90729e</div>
+    <div id="version">00fd9d57109b7312ace853e0b15923d23ce29f47</div>
 </div>
 
 <div id="unlock" style="display:none">
@@ -149,26 +235,101 @@ body {
         } else if (e.data.cmd == "notify_ready") {
             clearInterval(g_animation);
             document.getElementById("startup").style.display = "none";
+            // Qt only redraws the canvas on an event: nudge it so the
+            // finished window shows at once instead of a stale frame.
+            [50, 400, 1500].forEach(function(ms) {
+                setTimeout(function() {
+                    Module.canvas.dispatchEvent(new MouseEvent("mousemove", {
+                        bubbles: true, clientX: 1 + ms % 7, clientY: 1 + ms % 5}));
+                }, ms);
+            });
+            setTimeout(function() { window.dispatchEvent(new Event("resize")); }, 2000);
         } else if (e.data.cmd == "notify_alive") {
-            document.getElementById("startup_btn").disabled = false;
+            engine_alive();
         } else if (e.data.cmd == "fatal_error") {
             alert(e.data.msg);
         }
     }
 
-    async function connect() {
-        var btn = document.getElementById("startup_btn");
+    // ---- landing page ----
+    var g_alive = false, g_started = false;
 
-        btn.disabled = true;
-        btn.value = "Requesting device list...";
-        devices = await navigator.hid.requestDevice({filters: [{usagePage: 0xFF4D, usage: 0x53}]});
+    function set_status(text) {
+        document.getElementById("landing_status").textContent = text;
+    }
+
+    function set_choices_enabled(on) {
+        document.getElementById("connect_btn").disabled = !on || !("hid" in navigator);
+        document.getElementById("demo_btn").disabled = !on;
+    }
+
+    function show_choices() {
+        document.getElementById("landing_enter").style.display = "none";
+        document.getElementById("landing_choices").style.display = "block";
+        if (!("hid" in navigator)) {
+            var note = document.getElementById("landing_note");
+            note.textContent = "Connecting a MIDIswitch needs Chrome or Edge on a computer. You can still look around.";
+            note.style.display = "";
+        }
+        set_choices_enabled(true);
+    }
+
+    // The device picker must open straight from the click, so choices run
+    // at once and only wait for the app engine right before starting it.
+    function choose(action) {
+        if (g_started) return;
+        set_choices_enabled(false);
+        action();
+    }
+
+    var g_alive_waiters = [];
+
+    function wait_alive() {
+        if (g_alive) return Promise.resolve();
+        set_status("Loading...");
+        return new Promise(function(resolve) { g_alive_waiters.push(resolve); });
+    }
+
+    function engine_alive() {
+        g_alive = true;
+        g_alive_waiters.splice(0).forEach(function(resolve) { resolve(); });
+    }
+
+    function start_app(demo) {
+        g_started = true;
+        PThread.runningWorkers[0].postMessage({cmd: "py", payload:
+            "import webmain;webmain.main(qtApp" + (demo ? ", demo=True" : "") + ")"});
+        g_animation = setInterval(update_animation, 500);
+        g_animation_counter = 0;
+    }
+
+    async function start_demo() {
+        await wait_alive();
+        _vialglue_set_device_desc(allocateUTF8(JSON.stringify({path: "/demo", demo: true})));
+        start_app(true);
+    }
+
+    async function connect() {
+        set_status("Choose your MIDIswitch in the browser window...");
+        var devices;
+        try {
+            devices = await navigator.hid.requestDevice({filters: [{usagePage: 0xFF4D, usage: 0x53}]});
+        } catch (e) {
+            devices = [];
+        }
         if (devices.length != 1) {
-            btn.value = "Start MIDIswitch";
-            btn.disabled = false;
+            set_status("No MIDIswitch selected.");
+            set_choices_enabled(true);
             return;
         }
-        btn.value = "Connecting to the device...";
-        await devices[0].open();
+        set_status("Connecting to the MIDIswitch...");
+        try {
+            await devices[0].open();
+        } catch (e) {
+            set_status("Could not open the MIDIswitch. Close any other app using it and try again.");
+            set_choices_enabled(true);
+            return;
+        }
         devices[0].oninputreport = function(ev) {
             var bytes = new Uint8Array(32);
             for (var i = 0; i < 32 && i < ev.data.byteLength; ++i) {
@@ -197,30 +358,20 @@ body {
             usage: 0x53,
             interface_number: 1
         };
+        await wait_alive();
         _vialglue_set_device_desc(allocateUTF8(JSON.stringify(device_desc)));
 
-        btn.value = "Starting up....";
-        PThread.runningWorkers[0].postMessage({cmd: "py", payload: "import webmain;webmain.main(qtApp)"});
-
-        g_animation = setInterval(update_animation, 500);
-        g_animation_counter = 0;
+        start_app(false);
     }
 
     function update_animation() {
-        g_animation_counter = (g_animation_counter + 1) % 5;
-        document.getElementById("startup_btn").value = "Starting up" + ".".repeat(g_animation_counter + 1);
+        g_animation_counter = (g_animation_counter + 1) % 4;
+        set_status("Starting up" + ".".repeat(g_animation_counter));
     }
 
-    function show_error(e) {
-        document.getElementById("startup_btn").style.display = "none";
-        document.getElementById("error").style.display = "";
-        document.getElementById("error_msg").innerHTML = e;
-    }
-
-    if (!("hid" in navigator)) {
-        show_error("Your web browser does not support WebHID");
-    } else if (!HTMLCanvasElement.prototype.transferControlToOffscreen) {
-        show_error("Your web browser does not support OffscreenCanvas");
+    if (!HTMLCanvasElement.prototype.transferControlToOffscreen) {
+        document.getElementById("enter_btn").disabled = true;
+        set_status("This browser cannot run Switchstation. Please use the latest Chrome or Edge.");
     }
 
     window.onerror = function(message, source, lineno, colno, error) {
@@ -228,6 +379,6 @@ body {
     };
 </script>
 
-<script src="main-a50418d48ad1e359f38949dc1f49073829449e71d7aa8a488ee12f150a14fa4a.js"></script>
+<script src="main-73e1eaa6d2aee9cee2ee0d778727d260e1656d211e70de8573e485c28fdb9f0a.js"></script>
 
 </body>
