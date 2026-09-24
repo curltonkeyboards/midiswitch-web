@@ -26,10 +26,11 @@ body {
 }
 #landing_bg {
     position: absolute;
-    inset: -30px;
-    background: #f4b6c2 url("landing.jpg") center 35% / cover no-repeat;
+    /* Anchored to the top: the image is only ever cropped at the bottom.
+       A small overhang hides the blur's soft edge. */
+    inset: -8px -30px -30px -30px;
+    background: #f4b6c2 url("landing.jpg") center top / cover no-repeat;
     filter: blur(7px) saturate(1.05);
-    transform: scale(1.03);
 }
 #landing_tint {
     position: absolute;
