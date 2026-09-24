@@ -29,7 +29,9 @@ body {
     /* Anchored to the top: the image is only ever cropped at the bottom.
        A small overhang hides the blur's soft edge. */
     inset: -8px -30px -30px -30px;
-    background: #a8d8ef url("landing.jpg") center top / cover no-repeat;
+    /* Width-fitted and top-anchored: the lettering is never cut at the
+       sides; only the (plain blue, padded) bottom is ever cropped. */
+    background: #a6d3ea url("landing.jpg") center top / 100% auto no-repeat;
     filter: blur(7px) saturate(1.05);
 }
 #landing_tint {
