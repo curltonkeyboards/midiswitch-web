@@ -26,10 +26,13 @@ body {
 }
 #landing_bg {
     position: absolute;
-    inset: -30px;
-    background: #f4b6c2 url("landing.jpg") center 35% / cover no-repeat;
+    /* Anchored to the top: the image is only ever cropped at the bottom.
+       A small overhang hides the blur's soft edge. */
+    inset: -8px -30px -30px -30px;
+    /* Width-fitted and top-anchored: the lettering is never cut at the
+       sides; only the (plain blue, padded) bottom is ever cropped. */
+    background: #a6d3ea url("landing.jpg") center top / 100% auto no-repeat;
     filter: blur(7px) saturate(1.05);
-    transform: scale(1.03);
 }
 #landing_tint {
     position: absolute;
@@ -179,7 +182,7 @@ body {
         <div id="landing_progress"><div id="landing_progress_fill"></div></div>
         <p id="landing_status"></p>
     </div>
-    <div id="version">8be0db6b8fc6763f2840dccd623e4d9e7fe64dd6</div>
+    <div id="version">d2777031922b9a660c6b1fa4b78e34e3d0948b2b</div>
 </div>
 
 <div id="unlock" style="display:none">
@@ -446,6 +449,6 @@ body {
     };
 </script>
 
-<script src="main-5406db9829e7deee40383525193beef88f66d03c1816fb01e0bf2087da332152.js"></script>
+<script src="main-3bd94ed1a1c411882209bab83bea9bef971193398d164a20f7dbd4a4cd5e680a.js"></script>
 
 </body>
